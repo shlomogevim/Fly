@@ -18,7 +18,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var arFragment: ArFragment
     private val modelResourceIds = arrayOf(
-               R.raw.jet
+               R.raw.jet,
+               R.raw.beedrill
     )
 
     private var curCameraPosition = Vector3.zero()
@@ -90,8 +91,9 @@ class MainActivity : AppCompatActivity() {
             .thenAccept { modelRenderable ->
                 val spaceship = when(modelResourceId) {
 
-                    R.raw.jet -> Spaceship.Jet
-                    else -> Spaceship.Jet
+                  //  R.raw.jet -> Spaceship.Jet
+                    R.raw.beedrill -> Spaceship.Bee
+                    else -> Spaceship.Bee
                 }
                 addNodeToScene(anchor, modelRenderable, spaceship)
                 eliminateDot()

@@ -8,6 +8,13 @@ sceneform.asset(
         'sampledata/models1/Jet.sfa',
         'src/main/res/raw/jet'
 )
+sceneform.asset(
+        'sampledata/models/Beedrill_Animation.fbx',
+        'default',
+        'sampledata/models/Beedrill_Animation.sfa',
+        'src/main/res/raw/beedrill',
+        ['sampledata/models/Beedrill_Animation.fbx']
+)
 
 android {
     compileSdkVersion 29
