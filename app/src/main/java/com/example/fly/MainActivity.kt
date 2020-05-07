@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.google.ar.core.Anchor
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.animation.ModelAnimator
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
@@ -92,8 +93,8 @@ class MainActivity : AppCompatActivity() {
                 val spaceship = when(modelResourceId) {
 
                   //  R.raw.jet -> Spaceship.Jet
-                    R.raw.beedrill -> Spaceship.Bee
-                    else -> Spaceship.Bee
+                    R.raw.beedrill -> Models.Bee
+                    else -> Models.Bee
                 }
                 addNodeToScene(anchor, modelRenderable, spaceship)
                 eliminateDot()
@@ -102,13 +103,8 @@ class MainActivity : AppCompatActivity() {
                 null
             }
     }
-    private fun eliminateDot(){
-        arFragment.arSceneView.planeRenderer.isVisible = false
-        arFragment.planeDiscoveryController.hide()
-        arFragment.planeDiscoveryController.setInstructionView(null)
-    }
 
-    private fun addNodeToScene(anchor: Anchor, modelRenderable: ModelRenderable, spaceship: Spaceship) {
+    private fun addNodeToScene(anchor: Anchor, modelRenderable: ModelRenderable, spaceship: Models) {
         val anchorNode = AnchorNode(anchor)
         val rotatingNode = RotatingNode(spaceship.degreesPerSecond).apply {
             setParent(anchorNode)
@@ -121,5 +117,27 @@ class MainActivity : AppCompatActivity() {
         }
         arFragment.arSceneView.scene.addChild(anchorNode)
         nodes.add(rotatingNode)
+        val animationData = modelRenderable.getAnimationData("Beedrill_Animation")
+        ModelAnimator(animationData, modelRenderable).apply {
+            repeatCount = ModelAnimator.INFINITE
+            start()
+        }
+
+    }
+   /* private fun startAnimation() {
+        val renderable=
+        if (renderable.animationDataCount == 0) { // if there is no animation then escape
+            return
+        }
+        val animationData = renderable.getAnimationData("Beedrill_Animation")
+        ModelAnimator(animationData, renderable).apply {
+            repeatCount = ModelAnimator.INFINITE
+            start()
+        }
+    }*/
+    private fun eliminateDot(){
+        arFragment.arSceneView.planeRenderer.isVisible = false
+        arFragment.planeDiscoveryController.hide()
+        arFragment.planeDiscoveryController.setInstructionView(null)
     }
 }
