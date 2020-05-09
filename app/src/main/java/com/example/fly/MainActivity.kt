@@ -17,17 +17,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var arFragment: ArFragment
-    private val modelResourceIds = arrayOf(
-               R.raw.jet,
-               R.raw.beedrill
-    )
+    private val spaceship =Models.Fly
+   private val modelResourceIds = R.raw.fly5
 
+    private lateinit var arFragment: ArFragment
     private var curCameraPosition = Vector3.zero()
     private val nodes = mutableListOf<RotatingNode>()
     private lateinit var photoSaver: PhotoSaver
     private lateinit var videoRecorder: VideoRecorder
     private var isRecording = false
+    private val url1="https://firebasestorage.googleapis.com/v0/b/thermal-proton-239415.appspot.com/o/out.glb?alt=media&token=1a1bca0f-143e-446e-bbb8-1b49700bcdb8"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +35,7 @@ class MainActivity : AppCompatActivity() {
         arFragment = fragment as ArFragment
 
         arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
-            val randomId = modelResourceIds.random()
-            loadModelAndAddToScene(hitResult.createAnchor(), randomId)
+            loadModelAndAddToScene(hitResult.createAnchor(), modelResourceIds)
         }
         arFragment.arSceneView.scene.addOnUpdateListener {
             updateNodes()
@@ -90,12 +88,8 @@ class MainActivity : AppCompatActivity() {
             .setSource(this, modelResourceId)
             .build()
             .thenAccept { modelRenderable ->
-                val spaceship = when(modelResourceId) {
 
-                  //  R.raw.jet -> Spaceship.Jet
-                    R.raw.beedrill -> Models.Bee
-                    else -> Models.Bee
-                }
+
                 addNodeToScene(anchor, modelRenderable, spaceship)
                 eliminateDot()
             }.exceptionally {
@@ -124,17 +118,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-   /* private fun startAnimation() {
-        val renderable=
-        if (renderable.animationDataCount == 0) { // if there is no animation then escape
-            return
-        }
-        val animationData = renderable.getAnimationData("Beedrill_Animation")
-        ModelAnimator(animationData, renderable).apply {
-            repeatCount = ModelAnimator.INFINITE
-            start()
-        }
-    }*/
+
     private fun eliminateDot(){
         arFragment.arSceneView.planeRenderer.isVisible = false
         arFragment.planeDiscoveryController.hide()

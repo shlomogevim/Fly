@@ -1,0 +1,82 @@
+{
+  animations: [
+    {
+      clips: [
+        {
+          name: 'CINEMA_4D_Principal',
+        },
+      ],
+      path: 'sampledata/models2/Halcon Fly.fbx',
+    },
+    {
+      clips: [
+        {
+          name: 'CINEMA_4D_Principal',
+        },
+      ],
+      path: 'sampledata/models2/Halcon Fly.fbx',
+    },
+  ],
+  materials: [
+    {
+      name: 'MI_CHR_Hawk',
+      parameters: [
+        {
+          baseColor: [
+            1,
+            1,
+            1,
+            1,
+          ],
+        },
+        {
+          baseColorMap: 'T_CHR_Hawk_BC',
+        },
+        {
+          normalMap: null,
+        },
+        {
+          interpolatedColor: null,
+        },
+        {
+          metallic: 0,
+        },
+        {
+          metallicMap: null,
+        },
+        {
+          roughness: 1,
+        },
+        {
+          roughnessMap: null,
+        },
+        {
+          opacity: null,
+        },
+      ],
+      source: 'build/sceneform_sdk/default_materials/fbx_material.sfm',
+    },
+  ],
+  model: {
+    attributes: [
+      'Position',
+      'TexCoord',
+      'Orientation',
+      'BoneIndices',
+      'BoneWeights',
+    ],
+    collision: {},
+    file: 'sampledata/models2/Halcon Fly.fbx',
+    name: 'Halcon Fly',
+    recenter: 'root',
+    scale: 0.15,
+  },
+  samplers: [
+    {
+      file: 'sampledata/models2\\Halcon Fly.fbm\\T_CHR_Hawk_BC.tga',
+      name: 'T_CHR_Hawk_BC',
+      pipeline_name: 'Halcon Fly.fbm\\T_CHR_Hawk_BC.tga',
+    },
+  ],
+  version: '0.54:2',
+}

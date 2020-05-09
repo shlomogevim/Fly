@@ -1,0 +1,68 @@
+{
+  animations: [
+    {
+      clips: [
+        {
+          name: 'Take 001',
+          runtime_name: 'Fish',
+        },
+      ],
+      path: 'sampledata/models3/Fish.fbx',
+    },
+  ],
+  materials: [
+    {
+      name: 'Fish',
+      parameters: [
+        {
+          baseColor: [
+            0.58823499999999995,
+            0.58823499999999995,
+            0.58823499999999995,
+            1,
+          ],
+        },
+        {
+          baseColorMap: null,
+        },
+        {
+          normalMap: null,
+        },
+        {
+          interpolatedColor: null,
+        },
+        {
+          metallic: 0,
+        },
+        {
+          metallicMap: null,
+        },
+        {
+          roughness: 1,
+        },
+        {
+          roughnessMap: null,
+        },
+        {
+          opacity: null,
+        },
+      ],
+      source: 'build/sceneform_sdk/default_materials/fbx_material.sfm',
+    },
+  ],
+  model: {
+    attributes: [
+      'Position',
+      'TexCoord',
+      'Orientation',
+      'BoneIndices',
+      'BoneWeights',
+    ],
+    collision: {},
+    file: 'sampledata/models3/Fish.fbx',
+    name: 'Fish',
+    recenter: 'root',
+    scale: 0.02801,
+  },
+  version: '0.54:2',
+}
