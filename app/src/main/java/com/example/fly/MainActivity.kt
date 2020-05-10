@@ -21,8 +21,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val spaceship =Models.Bee
-   private val modelResourceIds = R.raw.beedrill
+
+    lateinit var modelUri1: Uri
+
+    private val spaceship =Models.Bird
+//    private val spaceship =Models.Bee
+   private var modelResourceIds = R.raw.beedrill
 
     private lateinit var arFragment: ArFragment
     private var curCameraPosition = Vector3.zero()
@@ -38,22 +42,80 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         arFragment = fragment as ArFragment
+        modelUri1= Uri.parse(url1)
 
        /* arFragment.setOnTapArPlaneListener { hitResult, _,_ ->
             spawnObject(hitResult.createAnchor(),Uri.parse(url1))
 
         }*/
 
-
         arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
-            loadModelAndAddToScene(hitResult.createAnchor(), modelResourceIds)
+            var source=getModel()
+            loadModelAndAddToScene(hitResult.createAnchor(), source)
         }
+
         arFragment.arSceneView.scene.addOnUpdateListener {
             updateNodes()
         }
         setupFab()
     }
 
+    private fun getModel(): RenderableSource {
+        val rendrebaleSource= RenderableSource.builder()
+            .setSource(this,modelUri1,RenderableSource.SourceType.GLB)
+            .setScale(0.002f)
+            .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+            .build()
+          return rendrebaleSource
+    }
+
+    private fun loadModelAndAddToScene(anchor: Anchor, modelResourceId: RenderableSource) {
+
+        ModelRenderable.builder()
+         //.setSource(this, modelResourceId)
+           .setSource(this, modelResourceId)
+            .setRegistryId(modelUri1)
+            .build()
+            .thenAccept { modelRenderable ->
+                addNodeToScene(anchor, modelRenderable, spaceship)
+                eliminateDot()
+            }.exceptionally {
+                Toast.makeText(this, "Error creating node: $it", Toast.LENGTH_LONG).show()
+                null
+            }
+    }
+
+
+
+    private fun updateNodes() {
+        curCameraPosition = arFragment.arSceneView.scene.camera.worldPosition
+        for(node in nodes) {
+            node.worldPosition = Vector3(curCameraPosition.x, node.worldPosition.y, curCameraPosition.z)
+        }
+    }
+
+
+
+    private fun addNodeToScene(anchor: Anchor, modelRenderable: ModelRenderable, spaceship: Models) {
+        val anchorNode = AnchorNode(anchor)
+        val rotatingNode = RotatingNode(spaceship.degreesPerSecond).apply {
+            setParent(anchorNode)
+        }
+        Node().apply {
+            renderable = modelRenderable
+            setParent(rotatingNode)
+            localPosition = Vector3(spaceship.radius, spaceship.height, 0f)
+            localRotation = Quaternion.eulerAngles(Vector3(0f, spaceship.rotationDegrees, 0f))
+        }
+        arFragment.arSceneView.scene.addChild(anchorNode)
+        nodes.add(rotatingNode)
+        val animationData = modelRenderable.getAnimationData("Beedrill_Animation")
+        ModelAnimator(animationData, modelRenderable).apply {
+            repeatCount = ModelAnimator.INFINITE
+            start()
+        }
+
+    }
 
     private fun spawnObject(anchor: Anchor,modelUri: Uri){
         val rendrebaleSource= RenderableSource.builder()
@@ -61,19 +123,18 @@ class MainActivity : AppCompatActivity() {
             .setScale(0.002f)
             .setRecenterMode(RenderableSource.RecenterMode.ROOT)
             .build()
+
         ModelRenderable.builder()
             .setSource(this,rendrebaleSource)
             .setRegistryId(modelUri)
             .build()
             .thenAccept {
-               addNodeToScene(anchor,it)
+                addNodeToScene(anchor,it)
             }.exceptionally {
                 Log.e("clima","Somthing go wrong in loading model")
                 null
             }
     }
-
-
 
     private fun addNodeToScene(anchor: Anchor,modelRenderable: ModelRenderable){
         val anchorNode=AnchorNode(anchor)
@@ -83,14 +144,6 @@ class MainActivity : AppCompatActivity() {
         }
         arFragment.arSceneView.scene.addChild(anchorNode)
     }
-
-
-
-
-
-
-
-
     private fun setupFab() {
         photoSaver = PhotoSaver(this)
         videoRecorder = VideoRecorder(this).apply {
@@ -121,48 +174,6 @@ class MainActivity : AppCompatActivity() {
 
             } else false
 
-        }
-
-    }
-    private fun updateNodes() {
-        curCameraPosition = arFragment.arSceneView.scene.camera.worldPosition
-        for(node in nodes) {
-            node.worldPosition = Vector3(curCameraPosition.x, node.worldPosition.y, curCameraPosition.z)
-        }
-    }
-
-    private fun loadModelAndAddToScene(anchor: Anchor, modelResourceId: Int) {
-        ModelRenderable.builder()
-            .setSource(this, modelResourceId)
-            .build()
-            .thenAccept { modelRenderable ->
-
-
-                addNodeToScene(anchor, modelRenderable, spaceship)
-                eliminateDot()
-            }.exceptionally {
-                Toast.makeText(this, "Error creating node: $it", Toast.LENGTH_LONG).show()
-                null
-            }
-    }
-
-    private fun addNodeToScene(anchor: Anchor, modelRenderable: ModelRenderable, spaceship: Models) {
-        val anchorNode = AnchorNode(anchor)
-        val rotatingNode = RotatingNode(spaceship.degreesPerSecond).apply {
-            setParent(anchorNode)
-        }
-        Node().apply {
-            renderable = modelRenderable
-            setParent(rotatingNode)
-            localPosition = Vector3(spaceship.radius, spaceship.height, 0f)
-            localRotation = Quaternion.eulerAngles(Vector3(0f, spaceship.rotationDegrees, 0f))
-        }
-        arFragment.arSceneView.scene.addChild(anchorNode)
-        nodes.add(rotatingNode)
-        val animationData = modelRenderable.getAnimationData("Beedrill_Animation")
-        ModelAnimator(animationData, modelRenderable).apply {
-            repeatCount = ModelAnimator.INFINITE
-            start()
         }
 
     }
