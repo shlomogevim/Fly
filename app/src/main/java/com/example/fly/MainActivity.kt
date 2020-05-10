@@ -1,24 +1,28 @@
 package com.example.fly
 
 import android.media.CamcorderProfile
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
 import com.google.ar.core.Anchor
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.animation.ModelAnimator
+import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
+import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val spaceship =Models.Fly
-   private val modelResourceIds = R.raw.fly5
+    private val spaceship =Models.Bee
+   private val modelResourceIds = R.raw.beedrill
 
     private lateinit var arFragment: ArFragment
     private var curCameraPosition = Vector3.zero()
@@ -26,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var photoSaver: PhotoSaver
     private lateinit var videoRecorder: VideoRecorder
     private var isRecording = false
+
     private val url1="https://firebasestorage.googleapis.com/v0/b/thermal-proton-239415.appspot.com/o/out.glb?alt=media&token=1a1bca0f-143e-446e-bbb8-1b49700bcdb8"
 
 
@@ -33,6 +38,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         arFragment = fragment as ArFragment
+
+       /* arFragment.setOnTapArPlaneListener { hitResult, _,_ ->
+            spawnObject(hitResult.createAnchor(),Uri.parse(url1))
+
+        }*/
+
 
         arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
             loadModelAndAddToScene(hitResult.createAnchor(), modelResourceIds)
@@ -42,6 +53,43 @@ class MainActivity : AppCompatActivity() {
         }
         setupFab()
     }
+
+
+    private fun spawnObject(anchor: Anchor,modelUri: Uri){
+        val rendrebaleSource= RenderableSource.builder()
+            .setSource(this,modelUri,RenderableSource.SourceType.GLB)
+            .setScale(0.002f)
+            .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+            .build()
+        ModelRenderable.builder()
+            .setSource(this,rendrebaleSource)
+            .setRegistryId(modelUri)
+            .build()
+            .thenAccept {
+               addNodeToScene(anchor,it)
+            }.exceptionally {
+                Log.e("clima","Somthing go wrong in loading model")
+                null
+            }
+    }
+
+
+
+    private fun addNodeToScene(anchor: Anchor,modelRenderable: ModelRenderable){
+        val anchorNode=AnchorNode(anchor)
+        TransformableNode(arFragment.transformationSystem).apply {
+            renderable=modelRenderable
+            setParent(anchorNode)
+        }
+        arFragment.arSceneView.scene.addChild(anchorNode)
+    }
+
+
+
+
+
+
+
 
     private fun setupFab() {
         photoSaver = PhotoSaver(this)
